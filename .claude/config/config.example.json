@@ -1,0 +1,22 @@
+{
+  "_comment": "cc-haha 项目 Git 远程配置模板。首次推送时自动复制为 config.local.json（不会被 git 追踪），填入实际值即可。",
+  "_remote_architecture": "origin → Gitee（自己镜像，推送目标）| upstream → GitHub（原仓库，拉取同步）",
+
+  "origin": {
+    "_comment": "推送目标 — 你自己的 Gitee 镜像仓库",
+    "_token_help": "https://gitee.com/profile/personal_access_tokens — 权限勾选仓库 (projects)",
+    "_username_note": "用户名是你的 Gitee 登录账号名（非邮箱、非昵称）。不确定就用 curl -s 'https://gitee.com/api/v5/user' --user 'username:token' | grep login 验证",
+    "platform": "gitee",
+    "remote_url": "https://gitee.com/Simnery/claude-code-haha",
+    "username": "your_gitee_username",
+    "token": "your_gitee_token"
+  },
+
+  "upstream": {
+    "_comment": "拉取源 — GitHub 原仓库（NanmiCoder/cc-haha），只拉取不推送",
+    "_sync_command": "git fetch upstream && git merge upstream/main",
+    "platform": "github",
+    "remote_url": "https://github.com/NanmiCoder/cc-haha.git",
+    "repo": "NanmiCoder/cc-haha"
+  }
+}

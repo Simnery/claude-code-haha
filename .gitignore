@@ -38,8 +38,17 @@ desktop/package-lock.json
 # Desktop brand asset candidates (keep only selected ones in public/)
 desktop/brand-assets/
 
-# Claude local config & auto-generated
-.claude/
+# Claude Code local settings & credentials (skills/templates/config.example are tracked)
+.claude/settings.local.json
+.claude/config/config.local.json
+
+# Local task data (skills/templates tracked, task instances local only)
+00_local_task/tasks/
+00_local_task/task_index.md
+
+# Sample — directory kept, contents not tracked
+sample/*
+!sample/.gitkeep
 
 # Superpowers plans & specs (local only)
 docs/superpowers/
