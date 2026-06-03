@@ -1,4 +1,4 @@
-# 02 — Generator 和 AsyncGenerator 深入详解
+# 00_03 — Generator 和 AsyncGenerator 深入详解
 
 > 面向人群：已了解 `yield` 基本概念，想要理解项目中 `query()` 为何用生成器模式。
 

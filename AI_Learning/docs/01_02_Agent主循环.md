@@ -1,4 +1,4 @@
-# 02 — Agent 主循环
+# 01_02 — Agent 主循环
 
 > 覆盖文件：`src/query.ts`, `src/QueryEngine.ts`, `src/replLauncher.tsx`, `src/screens/REPL.tsx`, `src/components/App.tsx`, `src/query/*.ts`
 

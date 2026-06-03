@@ -1,4 +1,4 @@
-# 01 — async/await 深入详解
+# 00_02 — async/await 深入详解
 
 > 面向人群：已了解 async/await 基本用法，想要深入理解"等待不阻塞"的原理。
 
