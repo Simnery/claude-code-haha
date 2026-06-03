@@ -1,0 +1,4 @@
+# 忽略所有内容，保留 _README.md 和 .gitignore 本身
+/*
+!/_README.md
+!/.gitignore
