@@ -21,18 +21,30 @@ allowed-tools: Bash Read Edit
 
 ### 双推送机制（一次 push 同步到 Gitee + GitHub）
 
-配置 origin 双 push URL：
+push URL 中不含 token（token 存在于 `config.local.json` 中，已被 `.gitignore` 排除）：
+
 ```bash
-# 查看当前配置
-git remote -v
-
-# 添加 GitHub 为第二 push URL（只需执行一次）
+# 首次配置双 push URL（不含 token，只需执行一次）
+git config --local --unset-all remote.origin.pushurl
+git remote set-url --add --push origin https://gitee.com/Simnery/claude-code-haha
 git remote set-url --add --push origin https://github.com/Simnery/claude-code-haha.git
-
-# 此后 git push origin main 会自动同时推送到 Gitee 和 GitHub
 ```
 
-> 配置文件 `.claude/config/config.local.json` 中需填 GitHub token（`github_token` 字段）。
+**推送时**，从 `config.local.json` 读取 token，拼入 URL：
+
+```bash
+# 读取 token
+GITEE_TOKEN=$(node -e "console.log(require('./.claude/config/config.local.json').origin.token)")
+GITHUB_TOKEN=$(node -e "console.log(require('./.claude/config/config.local.json').github.token)")
+
+# Gitee
+git push "https://Simnery:${GITEE_TOKEN}@gitee.com/Simnery/claude-code-haha" main
+
+# GitHub
+git push "https://Simnery:${GITHUB_TOKEN}@github.com/Simnery/claude-code-haha.git" main
+```
+
+> AI 执行推送时，自动从 `.claude/config/config.local.json` 读 token 并拼入 push URL。token 不出现在任何项目文件中。
 
 ### 推送单个平台
 
