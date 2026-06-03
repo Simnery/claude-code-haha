@@ -1,15 +1,26 @@
 {
   "_comment": "cc-haha 项目 Git 远程配置模板。首次推送时自动复制为 config.local.json（不会被 git 追踪），填入实际值即可。",
-  "_remote_architecture": "origin → Gitee（自己镜像，推送目标）| upstream → GitHub（原仓库，拉取同步）",
+  "_remote_architecture": "origin → Gitee（主推送，含双 push URL 同步到 GitHub）| github → GitHub 自己仓库（副推送）| upstream → GitHub 原仓库（拉取同步）",
 
   "origin": {
-    "_comment": "推送目标 — 你自己的 Gitee 镜像仓库",
+    "_comment": "主推送目标 — 你自己的 Gitee 镜像仓库",
     "_token_help": "https://gitee.com/profile/personal_access_tokens — 权限勾选仓库 (projects)",
     "_username_note": "用户名是你的 Gitee 登录账号名（非邮箱、非昵称）。不确定就用 curl -s 'https://gitee.com/api/v5/user' --user 'username:token' | grep login 验证",
     "platform": "gitee",
     "remote_url": "https://gitee.com/Simnery/claude-code-haha",
     "username": "your_gitee_username",
     "token": "your_gitee_token"
+  },
+
+  "github": {
+    "_comment": "副推送目标 — 你自己的 GitHub 仓库（双 push URL 自动同步）",
+    "_note": "git push origin main 会自动同时推到 Gitee + GitHub",
+    "_token_help": "https://github.com/settings/tokens — Classic Token 勾选 repo，Fine-grained Token 选仓库 + Contents Read/Write",
+    "platform": "github",
+    "remote_url": "https://github.com/Simnery/claude-code-haha.git",
+    "repo": "Simnery/claude-code-haha",
+    "username": "your_github_username",
+    "token": "your_github_token"
   },
 
   "upstream": {

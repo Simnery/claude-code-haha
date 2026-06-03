@@ -14,9 +14,35 @@ allowed-tools: Bash Read Edit
 
 > 配置文件: `.claude/config/config.example.json`（模板）→ 复制为 `config.local.json` 填入实际值
 
-- **origin** (推送): `https://gitee.com/Simnery/claude-code-haha` — 自己的 Gitee 镜像，日常推送目标
+- **origin** (主推送): `https://gitee.com/Simnery/claude-code-haha` — 自己的 Gitee 镜像
+- **github** (副推送): `https://github.com/Simnery/claude-code-haha.git` — 自己的 GitHub 仓库，同步推送
 - **upstream** (拉取): `https://github.com/NanmiCoder/cc-haha.git` — GitHub 原仓库，只拉取同步
 - **默认分支**: `main`
+
+### 双推送机制（一次 push 同步到 Gitee + GitHub）
+
+配置 origin 双 push URL：
+```bash
+# 查看当前配置
+git remote -v
+
+# 添加 GitHub 为第二 push URL（只需执行一次）
+git remote set-url --add --push origin https://github.com/Simnery/claude-code-haha.git
+
+# 此后 git push origin main 会自动同时推送到 Gitee 和 GitHub
+```
+
+> 配置文件 `.claude/config/config.local.json` 中需填 GitHub token（`github_token` 字段）。
+
+### 推送单个平台
+
+```bash
+# 只推 Gitee
+git push gitee main
+
+# 只推 GitHub
+git push github main
+```
 
 ### 拉取上游（同步 GitHub 原仓库最新代码）
 
@@ -27,13 +53,14 @@ git merge upstream/main
 git pull --rebase upstream main
 ```
 
-### 推送自己的改动到 Gitee
-
-```bash
-git push origin main
-```
-
 首次推送需要认证。凭据管理器（`credential.helper = manager`）缓存后无需重复输入。若认证失败，参考 `.claude/config/config.local.json` 中的 token 直接推送。
+
+### 推送 403 故障排查
+
+- Gitee Token 需勾选 `projects` / `仓库` 权限
+- GitHub 细粒度 Token (`github_pat_` 开头) 需: Repository access 选中目标仓库 + Permissions → Contents → Read and write
+- GitHub Classic Token (`ghp_` 开头) 需勾选 `repo` 范围
+- 检查 `.claude/config/config.local.json` 中 username 是否为**登录账号名**（非邮箱、非昵称）
 
 ## Commit Message 格式（Conventional Commits）
 
@@ -140,18 +167,38 @@ git pull --rebase upstream main
 6. `git stash pop`
 7. `git push origin main`
 
-## 远程修复（origin 丢失或错配时）
+## 远程修复（remote 丢失或错配时）
 
 当前目标配置：
-- origin → `https://gitee.com/Simnery/claude-code-haha`
+- origin → `https://gitee.com/Simnery/claude-code-haha`（含双 push URL）
+- github → `https://github.com/Simnery/claude-code-haha.git`
 - upstream → `https://github.com/NanmiCoder/cc-haha.git`
 
 ```bash
 # 修正 origin
 git remote set-url origin https://gitee.com/Simnery/claude-code-haha
 
+# 添加 GitHub 为第二 push URL
+git remote set-url --add --push origin https://github.com/Simnery/claude-code-haha.git
+
+# 添加独立 github remote
+git remote add github https://github.com/Simnery/claude-code-haha.git
+
 # 添加上游
 git remote add upstream https://github.com/NanmiCoder/cc-haha.git
+```
+
+验证配置：
+```bash
+git remote -v
+# 应看到:
+# origin  https://gitee.com/Simnery/claude-code-haha (fetch)
+# origin  https://gitee.com/Simnery/claude-code-haha (push)
+# origin  https://github.com/Simnery/claude-code-haha.git (push)
+# github  https://github.com/Simnery/claude-code-haha.git (fetch)
+# github  https://github.com/Simnery/claude-code-haha.git (push)
+# upstream https://github.com/NanmiCoder/cc-haha.git (fetch)
+# upstream https://github.com/NanmiCoder/cc-haha.git (push)
 ```
 
 ## Amend 合并提交
@@ -163,6 +210,35 @@ git remote add upstream https://github.com/NanmiCoder/cc-haha.git
 2. `git add <文件>`
 3. `git commit --amend`（复用原 message；如用户要求改 message 则调整）
 4. `git push origin main --force-with-lease`
+5. 若 `--force-with-lease` 被 GitHub 拒（stale info），对 GitHub remote 单独用 `--force`：
+   ```bash
+   git push github main --force
+   ```
+   Gitee 通常接受 `--force-with-lease`，GitHub 在跨 remote 场景可能需 `--force`。amend 后务必确认两侧都推送成功。
+
+## GitHub Actions 镜像（自动备份）
+
+`.github/workflows/mirror.yml` 可在 GitHub 侧自动镜像到 Gitee：
+
+```yaml
+name: Mirror to Gitee
+on:
+  push:
+    branches: [main]
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Push to Gitee
+        run: |
+          git remote add gitee https://${{ secrets.GITEE_USERNAME }}:${{ secrets.GITEE_PASSWORD }}@gitee.com/Simnery/claude-code-haha.git
+          git push gitee main:main --force
+```
+
+需要在 GitHub 仓库 Settings → Secrets 中配置 `GITEE_USERNAME` 和 `GITEE_PASSWORD`（Gitee token）。
 
 ## 禁止事项
 

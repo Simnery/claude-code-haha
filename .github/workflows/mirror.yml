@@ -1,0 +1,21 @@
+name: Mirror to Gitee
+
+# GitHub → Gitee 自动镜像。当 GitHub 仓库收到 push 时自动同步到 Gitee。
+# 需要配置 Secrets: GITEE_USERNAME, GITEE_PASSWORD (Gitee token)
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to Gitee
+        run: |
+          git remote add gitee https://${{ secrets.GITEE_USERNAME }}:${{ secrets.GITEE_PASSWORD }}@gitee.com/Simnery/claude-code-haha.git
+          git push gitee main:main --force
